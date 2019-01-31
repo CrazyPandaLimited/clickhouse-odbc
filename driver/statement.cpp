@@ -4,6 +4,7 @@
 #include <Poco/Base64Encoder.h>
 #include <Poco/Exception.h>
 #include <Poco/Net/HTTPRequest.h>
+#include <Poco/URI.h>
 
 Statement::Statement(Connection & conn_) : connection(conn_), metadata_id(conn_.environment.metadata_id) {
     ard.reset(new DescriptorClass);
@@ -45,29 +46,25 @@ bool Statement::isPrepared() const {
 }
 
 void Statement::sendRequest(IResultMutatorPtr mutator) {
-    std::ostringstream user_password_base64;
-    Poco::Base64Encoder base64_encoder(user_password_base64);
-    base64_encoder << connection.user << ":" << connection.password;
-    base64_encoder.close();
+    std::string prepared_query_encoded;
+    Poco::URI::encode(prepared_query, "", prepared_query_encoded);
 
     Poco::Net::HTTPRequest request;
-
-    request.setMethod(Poco::Net::HTTPRequest::HTTP_POST);
+    request.setMethod(Poco::Net::HTTPRequest::HTTP_GET);
     request.setVersion(Poco::Net::HTTPRequest::HTTP_1_1);
     request.setKeepAlive(true);
     request.setChunkedTransferEncoding(true);
-    request.setCredentials("Basic", user_password_base64.str());
-    request.setURI(
-        "/?database=" + connection.getDatabase() + "&default_format=ODBCDriver"); /// TODO Ability to transfer settings. TODO escaping
+    request.setURI("/?database=" + connection.getDatabase() + "&default_format=ODBCDriver" +
+        "&user=" + connection.user + "&password=" + connection.password + "&query=" + prepared_query_encoded);
 
-    LOG(request.getMethod() << " " << connection.session->getHost() << request.getURI() <<  " body=" << prepared_query);
+    LOG(request.getMethod() << " " << connection.session->getHost() << request.getURI() <<  " body=" << prepared_query_encoded);
 
     if (in && in->peek() != EOF)
         connection.session->reset();
     // Send request to server with finite count of retries.
     for (int i = 1;; ++i) {
         try {
-            connection.session->sendRequest(request) << prepared_query;
+            connection.session->sendRequest(request);
             response = std::make_unique<Poco::Net::HTTPResponse>();
             in = &connection.session->receiveResponse(*response);
             break;
