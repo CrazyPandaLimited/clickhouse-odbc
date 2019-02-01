@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/yandex/ClickHouse.svg?branch=master)](https://travis-ci.org/yandex/clickhouse-odbc)
+[![Build Status](https://travis-ci.org/CrazyPandaLimited/clickhouse-odbc.svg?branch=workaround_with_get)](https://travis-ci.org/CrazyPandaLimited/clickhouse-odbc)
 
 ## Cloning a Project with Submodules
 
