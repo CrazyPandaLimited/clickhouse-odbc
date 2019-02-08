@@ -125,3 +125,30 @@ Driver=$(PATH_OF_CLICKHOUSE_ODBC_SO)
 Run ```isql -v ClickHouse```
 
 Also look [test](test)/ contents
+
+## Install
+```
+debuild -us -uc -i --source-option=--format="3.0 (native)"
+cd ..
+dpkg -c clickhouse-odbc_1.1.1_amd64.deb
+drwxr-xr-x root/root         0 2017-12-18 16:14 ./
+drwxr-xr-x root/root         0 2017-12-18 16:14 ./usr/
+drwxr-xr-x root/root         0 2017-12-18 16:14 ./usr/lib/
+drwxr-xr-x root/root         0 2017-12-18 16:14 ./usr/lib/x86_64-linux-gnu/
+drwxr-xr-x root/root         0 2017-12-18 16:14 ./usr/lib/x86_64-linux-gnu/odbc/
+-rw-r--r-- root/root   4413792 2017-12-18 16:14 ./usr/lib/x86_64-linux-gnu/odbc/libclickhouseodbc.so
+drwxr-xr-x root/root         0 2017-12-18 16:14 ./usr/share/
+drwxr-xr-x root/root         0 2017-12-18 16:14 ./usr/share/clickhouse-odbc/
+-rw-r--r-- root/root       120 2017-12-18 16:14 ./usr/share/clickhouse-odbc/unixodbc.ini
+drwxr-xr-x root/root         0 2017-12-18 16:14 ./usr/share/doc/
+drwxr-xr-x root/root         0 2017-12-18 16:14 ./usr/share/doc/clickhouse-odbc/
+-rw-r--r-- root/root       144 2017-12-18 16:14 ./usr/share/doc/clickhouse-odbc/changelog.gz
+drwxr-xr-x root/root         0 2017-12-18 16:14 ./usr/share/doc/clickhouse-odbc/examples/
+-rw-r--r-- root/root       228 2017-12-18 16:14 ./usr/share/doc/clickhouse-odbc/examples/odbc.ini
+```
+
+create /etc/odbcinst.ini (http://www.unixodbc.org/odbcinst.html)
+```(ini)
+[ClickHouse]
+Driver = /usr/lib/x86_64-linux-gnu/odbc/libclickhouseodbc.so
+```
