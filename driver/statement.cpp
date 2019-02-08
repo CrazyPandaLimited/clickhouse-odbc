@@ -47,7 +47,7 @@ bool Statement::isPrepared() const {
 
 void Statement::sendRequest(IResultMutatorPtr mutator) {
     std::string prepared_query_encoded;
-    Poco::URI::encode(prepared_query, "", prepared_query_encoded);
+    Poco::URI::encode(prepared_query, "+", prepared_query_encoded);
 
     Poco::Net::HTTPRequest request;
     request.setMethod(Poco::Net::HTTPRequest::HTTP_GET);
